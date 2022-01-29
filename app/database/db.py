@@ -1,5 +1,5 @@
 import sqlite3
-
+from ..utils import hash
 # Table create 
 CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, name TEXT UNIQUE, password TEXT);"
 CREATE_ACCESS_TABLE = "CREATE TABLE IF NOT EXISTS access (id INTEGER PRIMARY KEY, name TEXT, description TEXT);"
@@ -47,3 +47,6 @@ def seed(connection):
                 VALUES (1, 'all', 'Доступен всем'),
 	            (2, 'link', 'Доступен только по ссылке'),
 	            (3, 'private', 'Доступен только мне');""")
+        count = connection.execute("SELECT COUNT(*) FROM user WHERE name='admin'").fetchone()
+        if count[0] == 0:
+            connection.execute("""INSERT INTO user (id, name, password) VALUES (1, 'admin', (?))""", (hash("admin"),))
