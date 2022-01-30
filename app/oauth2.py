@@ -1,6 +1,4 @@
-from http.client import HTTPException
-import time
-from fastapi import Depends
+from fastapi import Depends, status, HTTPException
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from . import schemas
@@ -34,9 +32,11 @@ def verify_access_token(token: str, creds_exception):
         token_data = schemas.TokenData(id=id)
     except JWTError:
         raise creds_exception
-
+        
+    return token_data
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    creds_exception = HTTPException(status_code=401, detail="Could not validate creds", headers={"WWW-Authenticate": "Bearer"})
+    creds_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+    detail=f"could not validate creds", headers={"WWW-Authenticate": "Bearer"})
 
     return verify_access_token(token, creds_exception)

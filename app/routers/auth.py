@@ -1,6 +1,5 @@
-from sqlite3 import connect
 import sqlite3
-from fastapi import APIRouter, Depends, status, HTTPException, Response
+from fastapi import APIRouter, Depends, status, HTTPException
 from ..database import db
 from .. import schemas, utils, oauth2
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm

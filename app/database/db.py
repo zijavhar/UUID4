@@ -14,9 +14,10 @@ CREATE_FILE_TABLE = """CREATE TABLE IF NOT EXISTS file
 
 # Tables insert
 INSERT_USER = "INSERT INTO user (name, password) VALUES (?, ?);"
-
+INSERT_FILE = "INSERT INTO file (name, access_id, user_id, number_of_downloads) VALUES (?, ?, ?, ?);"
 # Tables select
 GET_USER_BY_NAME = "SELECT * FROM user WHERE name = (?)"
+GET_FILES_FOR_SPECIFIC_USER = "SELECT * FROM file WHERE user_id = (?) OR access_id = 1 ORDER BY number_of_downloads DESC"
 # Connect to DB
 def connect():
     return sqlite3.connect("app/database/uuid4.db")
@@ -50,3 +51,11 @@ def seed(connection):
         count = connection.execute("SELECT COUNT(*) FROM user WHERE name='admin'").fetchone()
         if count[0] == 0:
             connection.execute("""INSERT INTO user (id, name, password) VALUES (1, 'admin', (?))""", (hash("admin"),))
+
+def create_file(connection, name, access_id, user_id):
+    with connection:
+        connection.execute(INSERT_FILE, (name, access_id, user_id, 0))
+
+def get_files(connection, user_id):
+    with connection:
+        return connection.execute(GET_FILES_FOR_SPECIFIC_USER, (user_id,)).fetchall()
